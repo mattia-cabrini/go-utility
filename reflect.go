@@ -29,7 +29,7 @@ import (
 	"reflect"
 )
 
-type genericFunc func(...interface{}) ([]interface{}, error)
+type GenericFunc func(...interface{}) ([]interface{}, error)
 
 func checkMethodArgs(methodVO reflect.Method, args []reflect.Value) error {
 	if m, a := methodVO.Type.NumIn(), len(args); m != a+1 {
@@ -51,7 +51,7 @@ func checkMethodArgs(methodVO reflect.Method, args []reflect.Value) error {
 	return nil
 }
 
-func newGenericFunc(obj interface{}, methodTO reflect.Method, methodVO reflect.Value) genericFunc {
+func newGenericFunc(obj interface{}, methodTO reflect.Method, methodVO reflect.Value) GenericFunc {
 	return func(argsI ...interface{}) (returnValues []interface{}, argError error) {
 		var args = make([]reflect.Value, len(argsI))
 		for i, arg := range argsI {
@@ -73,7 +73,7 @@ func newGenericFunc(obj interface{}, methodTO reflect.Method, methodVO reflect.V
 	}
 }
 
-func GetMethod(obj interface{}, name string, suffix string) genericFunc {
+func GetMethod(obj interface{}, name string, suffix string) GenericFunc {
 	to := reflect.TypeOf(obj)
 	vo := reflect.ValueOf(obj)
 
