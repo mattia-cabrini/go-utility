@@ -161,3 +161,23 @@ func TestMethodNameKo(t *testing.T) {
 		t.Fail()
 	}
 }
+
+func TestFieldOk(t *testing.T) {
+	obj := testType{0, 1}
+
+	i := GetProperty(obj, "B", "")
+
+	if i.(int) != 1 {
+		t.Fail()
+	}
+}
+
+func TestFieldKo(t *testing.T) {
+	obj := testType{0, 1}
+
+	i := GetProperty(obj, "c", "")
+
+	if i != nil {
+		t.Fail()
+	}
+}

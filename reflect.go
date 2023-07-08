@@ -88,6 +88,20 @@ func GetMethod(obj interface{}, name string, suffix string) GenericFunc {
 	return nil
 }
 
+func GetProperty(obj interface{}, name string, suffix string) interface{} {
+	to := reflect.TypeOf(obj)
+	vo := reflect.ValueOf(obj)
+
+	_, b := to.FieldByName(name + suffix)
+
+	if b {
+		fieldVO := vo.FieldByName(name + suffix)
+		return fieldVO.Interface()
+	}
+
+	return nil
+}
+
 var typeDefault = map[reflect.Kind]interface{}{
 	reflect.String:  "",
 	reflect.Int64:   int64(0),
