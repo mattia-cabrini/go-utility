@@ -27,8 +27,8 @@ package utility
 import "testing"
 
 type testType struct {
-	A int
-	B int
+	A int `con:"true" con2:"true"`
+	B int `con:"true" con2:"false"`
 }
 
 func (t *testType) GetAB(a, b int) (int, int) {
@@ -168,6 +168,22 @@ func TestFieldOk(t *testing.T) {
 	i := GetProperty(obj, "B", "")
 
 	if i.(int) != 1 {
+		t.Fail()
+	}
+}
+
+func TestFieldTag(t *testing.T) {
+	obj := testType{0, 1}
+
+	i := GetProperty(obj, "B", "", "con", "con2")
+
+	if i != nil {
+		t.Fail()
+	}
+
+	i = GetProperty(obj, "A", "", "con", "con2")
+
+	if i.(int) != 0 {
 		t.Fail()
 	}
 }

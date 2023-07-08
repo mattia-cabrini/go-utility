@@ -88,14 +88,22 @@ func GetMethod(obj interface{}, name string, suffix string) GenericFunc {
 	return nil
 }
 
-func GetProperty(obj interface{}, name string, suffix string) interface{} {
+func GetProperty(obj interface{}, name string, suffix string, tags ...string) interface{} {
 	to := reflect.TypeOf(obj)
 	vo := reflect.ValueOf(obj)
 
-	_, b := to.FieldByName(name + suffix)
+	fieldTO, b := to.FieldByName(name + suffix)
+
+	for _, tx := range tags {
+		if tagValue := fieldTO.Tag.Get(tx); tagValue != "true" {
+			b = false
+			break
+		}
+	}
 
 	if b {
 		fieldVO := vo.FieldByName(name + suffix)
+
 		return fieldVO.Interface()
 	}
 
