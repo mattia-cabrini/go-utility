@@ -31,13 +31,13 @@ import (
 
 type GenericFunc func(...interface{}) ([]interface{}, error)
 
-func checkMethodArgs(methodVO reflect.Method, args []reflect.Value) error {
-	if m, a := methodVO.Type.NumIn(), len(args); m != a+1 {
+func checkMethodArgs(methodTO reflect.Method, args []reflect.Value) error {
+	if m, a := methodTO.Type.NumIn(), len(args); m != a+1 {
 		return fmt.Errorf("expected %d arguments, got %d", m, a)
 	}
 
 	for i, arg := range args {
-		argTypeExpected := methodVO.Type.In(i + 1)
+		argTypeExpected := methodTO.Type.In(i + 1)
 
 		if i == 0 {
 			continue // skip the object itself
@@ -73,7 +73,7 @@ func newGenericFunc(obj interface{}, methodTO reflect.Method, methodVO reflect.V
 	}
 }
 
-func GetMethod(obj interface{}, name string, suffix string) GenericFunc {
+func GetMethod(obj interface{}, name string, suffix string) *Method {
 	to := reflect.TypeOf(obj)
 	vo := reflect.ValueOf(obj)
 
@@ -81,8 +81,8 @@ func GetMethod(obj interface{}, name string, suffix string) GenericFunc {
 
 	if b {
 		methodVO := vo.MethodByName(name + suffix)
-
-		return newGenericFunc(obj, methodTO, methodVO)
+		callable := newGenericFunc(obj, methodTO, methodVO)
+		return newMethod(methodTO, callable)
 	}
 
 	return nil

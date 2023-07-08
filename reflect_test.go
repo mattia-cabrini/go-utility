@@ -24,7 +24,10 @@ SOFTWARE.
 
 package utility
 
-import "testing"
+import (
+	"reflect"
+	"testing"
+)
 
 type testType struct {
 	A int `con:"true" con2:"true"`
@@ -46,14 +49,14 @@ func (t *testType) GetABstruct(a int, b testType) (int, int) {
 func TestMethodOk0(t *testing.T) {
 	obj := testType{0, 1}
 
-	f := GetMethod(&obj, "GetAB", "")
+	m := GetMethod(&obj, "GetAB", "")
 
-	if f == nil {
+	if m == nil {
 		t.Fail()
 		return
 	}
 
-	results, err := f(0, 1)
+	results, err := m.F(0, 1)
 
 	if err != nil {
 		t.Error(err)
@@ -66,19 +69,29 @@ func TestMethodOk0(t *testing.T) {
 	if results[1].(int) != 2 {
 		t.Error(1)
 	}
+
+	if m.ParamKind(0) != reflect.Int {
+		t.Error(2)
+	}
+	if m.ParamKind(1) != reflect.Int {
+		t.Error(3)
+	}
+	if m.NumIn() != 2 {
+		t.Error(4)
+	}
 }
 
 func TestMethodOk1(t *testing.T) {
 	obj := testType{0, 1}
 
-	f := GetMethod(&obj, "GetAB", "interface")
+	m := GetMethod(&obj, "GetAB", "interface")
 
-	if f == nil {
+	if m == nil {
 		t.Fail()
 		return
 	}
 
-	results, err := f(0, 1)
+	results, err := m.F(0, 1)
 
 	if err != nil {
 		t.Error(err)
@@ -96,14 +109,14 @@ func TestMethodOk1(t *testing.T) {
 func TestMethodOk2(t *testing.T) {
 	obj := testType{0, 1}
 
-	f := GetMethod(&obj, "GetAB", "struct")
+	m := GetMethod(&obj, "GetAB", "struct")
 
-	if f == nil {
+	if m == nil {
 		t.Fail()
 		return
 	}
 
-	results, err := f(0, obj)
+	results, err := m.F(0, obj)
 
 	if err != nil {
 		t.Error(err)
@@ -121,14 +134,14 @@ func TestMethodOk2(t *testing.T) {
 func TestMethodArgCountKo(t *testing.T) {
 	obj := testType{0, 1}
 
-	f := GetMethod(&obj, "Get", "AB")
+	m := GetMethod(&obj, "Get", "AB")
 
-	if f == nil {
+	if m == nil {
 		t.Fail()
 		return
 	}
 
-	_, err := f(0)
+	_, err := m.F(0)
 
 	if err == nil {
 		t.Fail()
@@ -138,14 +151,14 @@ func TestMethodArgCountKo(t *testing.T) {
 func TestMethodArgTypeKo(t *testing.T) {
 	obj := testType{0, 1}
 
-	f := GetMethod(&obj, "Get", "AB")
+	m := GetMethod(&obj, "Get", "AB")
 
-	if f == nil {
+	if m == nil {
 		t.Fail()
 		return
 	}
 
-	_, err := f(0, "1")
+	_, err := m.F(0, "1")
 
 	if err == nil {
 		t.Fail()
