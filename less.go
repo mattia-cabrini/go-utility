@@ -9,11 +9,16 @@ import (
 	"os/exec"
 )
 
+// Show a message on the terminal via less by executing
+// echo {string} piped through less.
+// The string is generated using Printf-like format and arguments
 func Lessf(format string, args ...interface{}) error {
 	str := fmt.Sprintf(format, args...)
 	return less(str)
 }
 
+// Show the string `str` on the terminal via less by executing
+// echo {str} piped through less
 func less(str string) (err error) {
 	echo := exec.Command("echo", str)
 	echo.Stdin = os.Stdin

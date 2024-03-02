@@ -15,6 +15,7 @@ var (
 	White         = "\033[97m"
 )
 
+// Set colours strings to ""
 func NotInteractive() {
 	Reset = ""
 	Red = ""
@@ -27,6 +28,7 @@ func NotInteractive() {
 	White = ""
 }
 
+// Reset colours strings to their values
 func Interactive() {
 	Reset = "\033[0m"
 	Red = "\033[31m"

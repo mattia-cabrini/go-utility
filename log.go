@@ -13,13 +13,14 @@ import (
 type LogLevel int
 
 const (
-	FATAL LogLevel = (1 << iota) >> 1
-	ERROR
-	WARNING
-	INFO
-	VERBOSE
+	FATAL   LogLevel = (1 << iota) >> 1 // To log an error and exit
+	ERROR                               // To log and error
+	WARNING                             // To log a warning
+	INFO                                // To log some information
+	VERBOSE                             // To log some detailed information (meant to debug)
 )
 
+// Maps log levels to strings
 var levelToString = map[LogLevel]string{
 	FATAL:   " FATAL ",
 	ERROR:   " ERROR ",
@@ -28,6 +29,7 @@ var levelToString = map[LogLevel]string{
 	VERBOSE: "VERBOSE",
 }
 
+// Maps log levels to colours
 func getLevelColor(level LogLevel) string {
 	switch level {
 	case FATAL:
@@ -43,14 +45,21 @@ func getLevelColor(level LogLevel) string {
 	return Gray
 }
 
+// To log synchronously
 var logGuard *sync.Mutex = &sync.Mutex{}
-var MaximumLevel LogLevel = WARNING
 
+// Minimum level to log
+// If it is WARNING, INFO and VERBOSE are not logged
+// If it is ERROR, WARNING, INFO and WARNING are not logged
+// ... and so on ...
+var MinimumLevel LogLevel = WARNING
+
+// Log a message with a specific log level; Format and args are Printf-like
 func Logf(level LogLevel, format string, args ...interface{}) {
 	logGuard.Lock()
 	defer logGuard.Unlock()
 
-	if level > MaximumLevel {
+	if level > MinimumLevel {
 		return
 	}
 
@@ -75,6 +84,7 @@ func logfCompose(level LogLevel, format string) string {
 	return format
 }
 
+// Log a message on *testing.T with a specific log level; Format and args are Printf-like
 func Tlogf(t *testing.T, level LogLevel, format string, args ...interface{}) {
 	logGuard.Lock()
 	defer logGuard.Unlock()

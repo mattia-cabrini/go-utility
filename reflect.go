@@ -52,6 +52,9 @@ func newGenericFunc(obj interface{}, methodTO reflect.Method, methodVO reflect.V
 	}
 }
 
+// Giveng an obj interface{}, returns a *Method from that obj.
+// GetMethod seeks a method that has name equal to name + suffix.
+// `suffix` might just be an empty string.
 func GetMethod(obj interface{}, name string, suffix string) *Method {
 	to := reflect.TypeOf(obj)
 	vo := reflect.ValueOf(obj)
@@ -67,6 +70,9 @@ func GetMethod(obj interface{}, name string, suffix string) *Method {
 	return nil
 }
 
+// Giveng an obj interface{}, returns an interface{} which is a propery value of that onj.
+// GetProperty seeks a property that has name equal to name + suffix.
+// `suffix` might just be an empty string.
 func GetProperty(obj interface{}, name string, suffix string, tags ...string) interface{} {
 	to := reflect.TypeOf(obj)
 	vo := reflect.ValueOf(obj)
