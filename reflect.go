@@ -70,8 +70,8 @@ func GetMethod(obj interface{}, name string, suffix string) *Method {
 	return nil
 }
 
-// Giveng an obj interface{}, returns an interface{} which is a propery value of that onj.
-// GetProperty seeks a property that has name equal to name + suffix.
+// Giveng an obj interface{}, returns an interface{} which is a propery value of that obj.
+// GetProperty seeks a property that has name equal to name + suffix and all given tags equal to true.
 // `suffix` might just be an empty string.
 func GetProperty(obj interface{}, name string, suffix string, tags ...string) interface{} {
 	to := reflect.TypeOf(obj)
