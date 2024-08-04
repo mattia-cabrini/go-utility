@@ -3,6 +3,8 @@
 
 package utility
 
+import "strings"
+
 // Returns str without last n characters
 func ButLastN(str string, n int) string {
 	lenStr := len(str)
@@ -36,4 +38,22 @@ func EndsWith(str string, suffix string) bool {
 	}
 
 	return str[lenStr-lenSuffix:] == suffix
+}
+
+func Quote(str string) string {
+	var sb strings.Builder
+
+	sb.WriteRune('"')
+
+	for _, rx := range str {
+		if rx == '"' {
+			sb.WriteString("\\\"")
+		} else {
+			sb.WriteRune(rx)
+		}
+	}
+
+	sb.WriteRune('"')
+
+	return sb.String()
 }
