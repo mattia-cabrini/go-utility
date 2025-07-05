@@ -11,26 +11,22 @@ import (
 type GenericFunc func(...interface{}) ([]interface{}, error)
 
 func checkMethodArgs(methodTO reflect.Method, args []reflect.Value) error {
-	if m, a := methodTO.Type.NumIn(), len(args); m != a+1 {
-		return fmt.Errorf("expected %d arguments, got %d", m, a)
+	if expected, actual := methodTO.Type.NumIn()-1, len(args); expected != actual {
+		return fmt.Errorf("method %s expected %d arguments, got %d", methodTO.Name, expected, actual)
 	}
 
 	for i, arg := range args {
 		argTypeExpected := methodTO.Type.In(i + 1)
 
-		if i == 0 {
-			continue // skip the object itself
-		}
-
 		if !arg.Type().AssignableTo(argTypeExpected) {
-			return fmt.Errorf("expected %v argument, got %v (parameter #%d)", argTypeExpected.Kind(), arg.Kind(), i)
+			return fmt.Errorf("method %s expected %s argument, got %s (parameter #%d)", methodTO.Name, argTypeExpected.String(), arg.String(), i+1)
 		}
 	}
 
 	return nil
 }
 
-func newGenericFunc(obj interface{}, methodTO reflect.Method, methodVO reflect.Value) GenericFunc {
+func newGenericFunc(methodTO reflect.Method, methodVO reflect.Value) GenericFunc {
 	return func(argsI ...interface{}) (returnValues []interface{}, argError error) {
 		var args = make([]reflect.Value, len(argsI))
 		for i, arg := range argsI {
@@ -63,7 +59,7 @@ func GetMethod(obj interface{}, name string, suffix string) *Method {
 
 	if b {
 		methodVO := vo.MethodByName(name + suffix)
-		callable := newGenericFunc(obj, methodTO, methodVO)
+		callable := newGenericFunc(methodTO, methodVO)
 		return newMethod(methodTO, callable)
 	}
 
@@ -79,17 +75,19 @@ func GetProperty(obj interface{}, name string, suffix string, tags ...string) in
 
 	fieldTO, b := to.FieldByName(name + suffix)
 
-	for _, tx := range tags {
-		if tagValue := fieldTO.Tag.Get(tx); tagValue != "true" {
-			b = false
-			break
-		}
-	}
-
 	if b {
-		fieldVO := vo.FieldByName(name + suffix)
+		for _, tx := range tags {
+			if tagValue := fieldTO.Tag.Get(tx); tagValue != "true" {
+				b = false
+				break
+			}
+		}
 
-		return fieldVO.Interface()
+		if b {
+			fieldVO := vo.FieldByName(name + suffix)
+
+			return fieldVO.Interface()
+		}
 	}
 
 	return nil
